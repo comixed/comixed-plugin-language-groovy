@@ -1,7 +1,20 @@
 import org.comixedproject.model.plugin.LibraryPluginProperty
+import org.comixedproject.model.plugin.PluginType
 
+
+// Returns the name of the plugin, displayed in the plugin menu and plugin tab
 def plugin_name()       { return "Good Plugin" }
+
+// Returns the version of the plugin, displayed in the plugin tab
 def plugin_version()    { return "1.2.3.4" }
+
+// Returns the type of plugin
+def plugin_type()       { return PluginType.Single }
+
+/* Returns the list of properties that will be populated when the plugin runs
+ * The properties have a name, a length, and a default value. When the plugin
+ * is configured, these default values can be overwritten with new values.
+ */
 def plugin_properties() {
  var property1 = LibraryPluginProperty.createProperty("test_property_1", 32, "")
  var property2 = LibraryPluginProperty.createRequiredProperty("test_property_2", 64, "default value")
@@ -9,4 +22,7 @@ def plugin_properties() {
  return [property1, property2]
  }
 
-print "Hello World!"
+// here is where the actual plugin functionality is
+def execute(Long comicBookId) {
+  print "Hello world! id=${comicBookId}"
+}
