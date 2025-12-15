@@ -27,6 +27,7 @@ import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.comixedproject.model.plugin.LibraryPlugin;
 import org.comixedproject.model.plugin.LibraryPluginProperty;
+import org.comixedproject.model.plugin.PluginType;
 import org.comixedproject.plugins.AbstractPluginRuntime;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -69,6 +70,19 @@ public class GroovyPluginRuntime extends AbstractPluginRuntime {
   }
 
   @Override
+  public PluginType getPluginType(final String filename) {
+    final GroovyShell shell = doCreatePluginShell();
+    try {
+      log.trace("Loading plugin properties: {}", filename);
+      final Script script = shell.parse(new File(filename));
+      return (PluginType) script.invokeMethod("plugin_type", new Object[] {});
+    } catch (Exception error) {
+      log.error("Failed to load plugin properties", error);
+      return PluginType.Undefined;
+    }
+  }
+
+  @Override
   public List<LibraryPluginProperty> getProperties(final String filename) {
     final GroovyShell shell = doCreatePluginShell();
     try {
@@ -83,20 +97,30 @@ public class GroovyPluginRuntime extends AbstractPluginRuntime {
   }
 
   @Override
-  public Boolean execute(final LibraryPlugin libraryPlugin) {
+  public void execute(final LibraryPlugin libraryPlugin, final Long comicBookId) {
     final var shell = doCreatePluginShell();
     try {
-      log.trace(
-          "Executing libraryPlugin: {} v{}", libraryPlugin.getName(), libraryPlugin.getVersion());
+      log.trace("Executing libraryPlugin: {}", libraryPlugin.getName());
       this.getProperties()
           .entrySet()
           .forEach(entry -> shell.setProperty(entry.getKey(), entry.getValue()));
-      shell.evaluate(new File(libraryPlugin.getFilename()));
-      log.trace("LibraryPlugin completed without error");
-      return true;
+      shell.parse(new File(libraryPlugin.getFilename())).invokeMethod("execute", comicBookId);
     } catch (Exception error) {
       log.error("Failed to execute libraryPlugin", error);
-      return false;
+    }
+  }
+
+  @Override
+  public void execute(final LibraryPlugin libraryPlugin, final List<Long> comicBookIds) {
+    final var shell = doCreatePluginShell();
+    try {
+      log.trace("Executing libraryPlugin: {}", libraryPlugin.getName());
+      this.getProperties()
+          .entrySet()
+          .forEach(entry -> shell.setProperty(entry.getKey(), entry.getValue()));
+      shell.parse(new File(libraryPlugin.getFilename())).invokeMethod("execute", comicBookIds);
+    } catch (Exception error) {
+      log.error("Failed to execute libraryPlugin", error);
     }
   }
 
