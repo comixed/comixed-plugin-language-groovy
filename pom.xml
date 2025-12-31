@@ -4,7 +4,7 @@
     <groupId>org.comixedproject</groupId>
     <artifactId>comixed-plugin-language-groovy</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <name>comixed-plugin-language-groovy</name>
     <url>https://github.com/comixed/comixed-plugin-language-groovy</url>
 
@@ -150,7 +150,7 @@
                 <artifactId>gitlog-maven-plugin</artifactId>
                 <version>1.14.0</version>
                 <configuration>
-                    <reportTitle>Changelog for the ComiXed Groovy Language Plugin v0.1-SNAPSHOT</reportTitle>
+                    <reportTitle>Changelog for the ComiXed Groovy Language Plugin v0.2-SNAPSHOT</reportTitle>
                     <verbose>false</verbose>
                     <outputDirectory>${project.basedir}</outputDirectory>
                     <generateMarkdownChangeLog>true</generateMarkdownChangeLog>
