@@ -20,9 +20,12 @@ package org.comixedproject.plugins;
 
 import static junit.framework.TestCase.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.comixedproject.model.plugin.LibraryPlugin;
 import org.comixedproject.model.plugin.LibraryPluginProperty;
+import org.comixedproject.model.plugin.PluginType;
 import org.comixedproject.plugins.groovy.GroovyPluginRuntime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,39 +44,57 @@ class GroovyLibraryPluginRuntimeTest {
   private static final Integer TEST_PROPERTY_1_LENGTH = 32;
   private static final String TEST_PROPERTY_NAME_2 = "test_property_2";
   private static final Integer TEST_PROPERTY_2_LENGTH = 64;
+  private static final Long TEST_COMIC_BOOK_ID = 717L;
+  private static final List<Long> TEST_COMIC_BOOK_ID_LIST =
+      new ArrayList<>(Arrays.asList(TEST_COMIC_BOOK_ID));
 
   @InjectMocks private GroovyPluginRuntime runner;
   @Mock private LibraryPlugin libraryPlugin;
 
   @Test
-  void testExecuteHelloWorld() {
+  void execute_single_helloWorld() {
     Mockito.when(libraryPlugin.getFilename()).thenReturn(TEST_GOOD_PLUGIN);
 
-    final Boolean result = runner.execute(libraryPlugin);
-
-    assertTrue(result);
+    runner.execute(libraryPlugin, TEST_COMIC_BOOK_ID);
   }
 
   @Test
-  void testExecuteBadScript() {
+  void execute_single_badScript() {
     Mockito.when(libraryPlugin.getFilename()).thenReturn(TEST_BROKEN_PLUGIN);
 
-    final Boolean result = runner.execute(libraryPlugin);
-
-    assertFalse(result);
+    runner.execute(libraryPlugin, TEST_COMIC_BOOK_ID);
   }
 
   @Test
-  void testExecuteMissingScript() {
+  void execute_single_missingScript() {
     Mockito.when(libraryPlugin.getFilename()).thenReturn(TEST_BROKEN_PLUGIN.substring(1));
 
-    final Boolean result = runner.execute(libraryPlugin);
-
-    assertFalse(result);
+    runner.execute(libraryPlugin, TEST_COMIC_BOOK_ID);
   }
 
   @Test
-  void testGetName() {
+  void execute_list_helloWorld() {
+    Mockito.when(libraryPlugin.getFilename()).thenReturn(TEST_GOOD_PLUGIN);
+
+    runner.execute(libraryPlugin, TEST_COMIC_BOOK_ID_LIST);
+  }
+
+  @Test
+  void execute_list_badScript() {
+    Mockito.when(libraryPlugin.getFilename()).thenReturn(TEST_BROKEN_PLUGIN);
+
+    runner.execute(libraryPlugin, TEST_COMIC_BOOK_ID_LIST);
+  }
+
+  @Test
+  void execute_list_missingScript() {
+    Mockito.when(libraryPlugin.getFilename()).thenReturn(TEST_BROKEN_PLUGIN.substring(1));
+
+    runner.execute(libraryPlugin, TEST_COMIC_BOOK_ID_LIST);
+  }
+
+  @Test
+  void getName() {
     final String result = runner.getName(TEST_GOOD_PLUGIN);
 
     assertNotNull(result);
@@ -81,7 +102,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testGetNameBadScript() {
+  void getName_badScript() {
     final String result = runner.getName(TEST_BROKEN_PLUGIN);
 
     assertNotNull(result);
@@ -89,7 +110,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testGetNameMissingPlugin() {
+  void getName_missingPlugin() {
     final String result = runner.getName(TEST_BROKEN_PLUGIN.substring(1));
 
     assertNotNull(result);
@@ -97,7 +118,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testGetVersion() {
+  void getVersion() {
     final String result = runner.getVersion(TEST_GOOD_PLUGIN);
 
     assertNotNull(result);
@@ -105,7 +126,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testGetVersionBadScript() {
+  void getVersion_badScript() {
     final String result = runner.getVersion(TEST_BROKEN_PLUGIN);
 
     assertNotNull(result);
@@ -113,7 +134,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testGetVersionMissingPlugin() {
+  void getVersion_missingPlugin() {
     final String result = runner.getVersion(TEST_BROKEN_PLUGIN.substring(1));
 
     assertNotNull(result);
@@ -121,7 +142,23 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testLoadProperties() {
+  void getPluginType() {
+    final PluginType result = runner.getPluginType(TEST_GOOD_PLUGIN);
+
+    assertNotNull(result);
+    assertSame(PluginType.Single, result);
+  }
+
+  @Test
+  void getPluginType_missingScript() {
+    final PluginType result = runner.getPluginType(TEST_BROKEN_PLUGIN.substring(1));
+
+    assertNotNull(result);
+    assertSame(PluginType.Undefined, result);
+  }
+
+  @Test
+  void loadProperties() {
     final List<LibraryPluginProperty> result = runner.getProperties(TEST_GOOD_PLUGIN);
 
     assertNotNull(result);
@@ -149,7 +186,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testLoadPropertiesBadScript() {
+  void loadProperties_badScript() {
     final List<LibraryPluginProperty> result = runner.getProperties(TEST_BROKEN_PLUGIN);
 
     assertNotNull(result);
@@ -157,7 +194,7 @@ class GroovyLibraryPluginRuntimeTest {
   }
 
   @Test
-  void testLoadPropertiesMissingPlugin() {
+  void loadProperties_missingPlugin() {
     final List<LibraryPluginProperty> result =
         runner.getProperties(TEST_BROKEN_PLUGIN.substring(1));
 
