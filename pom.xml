@@ -30,7 +30,7 @@
         <sonar.links.issue>https://github.com/comixed/comixed-plugin-language-groovy/issues</sonar.links.issue>
         <sonar.sources>${project.basedir}/src/main/java</sonar.sources>
         <lombok.version>1.18.30</lombok.version>
-        <log4j.version>2.20.0</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
     </properties>
 
     <repositories>
